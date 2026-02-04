@@ -1,0 +1,76 @@
+name: Weekly Update & Publish
+
+on:
+  schedule:
+    - cron: '0 0 * * 6' # Every Saturday at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  update-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required to push commits/tags
+      id-token: write # To authenticate with NPM via OIDC
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for version bumping
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # 1. Generate new JSON files from linguis.yml
+      - name: Generate
+        run: npm run generate
+
+      # 2. Check if the 'src/generated' folder changed
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if [[ -n $(git status --porcelain src/generated) ]]; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+            echo "::notice ::Changes detected in language data. Preparing to publish."
+          else
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+            echo "::notice ::No changes detected. Skipping publish."
+          fi 
+
+      # 3. Run tests against the NEW data
+      - name: Test
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: npm test
+
+      # 4. Compile typescript
+      - name: Compile
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: npm run compile
+
+      # 5. Bump Version, Commit & Publish
+      - name: Bump Version & Publish
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # Bump a version in package.json without creating a git commit
+          npm version patch --no-git-tag-version
+
+          git add src/generated package.json package-lock.json
+
+          NEW_VERSION=$(node -p "require('./package.json').version")
+
+          git commit -m "chore: update language data to v$NEW_VERSION [skip ci]"
+          git tag "v$NEW_VERSION"
+
+          git push
+          git push origin "v$NEW_VERSION"
+
+          npm publish --provenance --access public

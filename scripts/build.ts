@@ -1,0 +1,98 @@
+import yaml from 'js-yaml';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// --- Interfaces for the incoming YAML ---
+interface LinguistDef {
+  type: string;
+  extensions?: string[];
+  filenames?: string[];
+  group?: string;
+}
+
+interface LinguistYaml {
+  [languageName: string]: LinguistDef;
+}
+
+const URL = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml';
+const OUTPUT_DIR = path.resolve(__dirname, '../src/generated');
+
+async function build() {
+  console.log('Downloading languages.yml...');
+
+  const response = await fetch(URL);
+  if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
+  const yamlText = await response.text();
+
+  const rawLanguages = yaml.load(yamlText) as LinguistYaml;
+
+  console.log('Processing data...');
+
+  // The Master Database
+  // Key: lowercase (e.g. "rust") -> Value: { name: "Rust", type: "programming", ... }
+  const languagesDB: Record<string, any> = {};
+
+  // Indices
+  // Key: identifier (e.g. ".rs") -> Value: lowercase keys (e.g. ["rust", "renderscript"])
+  const extensionIndex: Record<string, string[]> = {};
+  const filenameIndex: Record<string, string[]> = {};
+
+  // Type Index (Refactored from "groups")
+  // Key: 'programming' -> Value: ['javascript', 'python', ...]
+  const typesDB: Record<string, string[]> = {
+    data: [],
+    programming: [],
+    markup: [],
+    prose: [],
+  };
+
+  for (const [originalName, def] of Object.entries(rawLanguages)) {
+    const key = originalName.toLowerCase();
+
+    languagesDB[key] = {
+      name: originalName,
+      type: def.type,
+      extensions: def.extensions || [],
+      filenames: def.filenames || [],
+      ...(def.group && { group: def.group }),
+    };
+
+    // Build Extension Index
+    if (def.extensions) {
+      for (const ext of def.extensions) {
+        if (!extensionIndex[ext]) extensionIndex[ext] = [];
+        extensionIndex[ext].push(key);
+      }
+    }
+
+    // Build Filename Index
+    if (def.filenames) {
+      for (const file of def.filenames) {
+        if (!filenameIndex[file]) filenameIndex[file] = [];
+        filenameIndex[file].push(key);
+      }
+    }
+
+    // Build Type Index (e.g. "programming")
+    if (def.type && typesDB[def.type]) {
+      typesDB[def.type].push(key);
+    }
+  }
+
+  // Ensure output directory exists
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  }
+
+  const writeJson = (name: string, data: any) =>
+    fs.writeFileSync(path.join(OUTPUT_DIR, name), JSON.stringify(data, null, 2));
+
+  writeJson('languages.json', languagesDB);
+  writeJson('extensions.json', extensionIndex);
+  writeJson('filenames.json', filenameIndex);
+  writeJson('types.json', typesDB);
+
+  console.log('✅ Build complete! Files saved to:', OUTPUT_DIR);
+}
+
+build().catch(console.error);

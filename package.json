@@ -1,0 +1,59 @@
+{
+  "name": "file-lang-map",
+  "version": "1.0.0",
+  "description": "Identify programming languages from filenames and extensions.",
+  "keywords": [
+    "linguist",
+    "language-detection",
+    "file-extension",
+    "programming-languages",
+    "extension-map",
+    "filename-map",
+    "lookup",
+    "fast"
+  ],
+  "author": "Mykhailo Onikiienko <michael.onikienko@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onikienko/file-lang-map.git"
+  },
+  "bugs": {
+    "url": "https://github.com/onikienko/file-lang-map/issues"
+  },
+  "homepage": "https://github.com/onikienko/file-lang-map#readme",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "format": "prettier --write .",
+    "generate": "tsx scripts/build.ts",
+    "compile": "tsup src/index.ts --format cjs,esm --dts --minify --target es2020 --clean",
+    "build": "npm run generate && npm run compile",
+    "clean": "tsx scripts/clean.ts",
+    "test": "node --import tsx --test test/**/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.10.9",
+    "js-yaml": "^4.1.0",
+    "prettier": "^3.8.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
