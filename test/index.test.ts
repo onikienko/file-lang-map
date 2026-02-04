@@ -24,6 +24,11 @@ describe('file-lang-map Tests', () => {
       const lang = getLanguage('FakeLang123');
       assert.strictEqual(lang, null);
     });
+
+    it('should return null for an empty string', () => {
+      const lang = getLanguage('');
+      assert.strictEqual(lang, null);
+    });
   });
 
   describe('getLanguagesByType()', () => {
