@@ -92,7 +92,7 @@ async function build() {
   writeJson('filenames.json', filenameIndex);
   writeJson('types.json', typesDB);
 
-  console.log('✅ Build complete! Files saved to:', OUTPUT_DIR);
+  console.log('✅ Generation complete! Files saved to:', OUTPUT_DIR);
 }
 
 build().catch(console.error);
