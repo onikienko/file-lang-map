@@ -4,10 +4,10 @@
 
 ### Why
 
-Most language detection libraries are either too heavy (2MB+ JSON dumps) or too slow (looping over arrays).
+Most language detection libraries are either too heavy or too slow (looping over arrays).
 `file-lang-map` pre-indexes GitHub
 Linguist [languages.yml](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml) data into optimized
-hash maps, giving you instant lookups with a tiny footprint.
+hash maps, ensuring instant lookups with a tiny footprint.
 
 ## Features
 
@@ -27,8 +27,7 @@ npm install file-lang-map
 
 ### 1. Identify Language by Filename
 
-The most common use case. Safely handles full paths, exact filenames, and extensions. Returns an array of language
-names.
+Handles full paths, exact filenames, and extensions. Returns an array of language names.
 
 ```typescript
 import {getLanguageByFileName} from 'file-lang-map';
@@ -55,7 +54,7 @@ You can pass a second argument to filter results immediately (e.g., only "progra
 const headers = getLanguageByFileName('header.h', 'programming');
 // Returns: [ 'C', 'C++', 'Objective-C' ]
 
-// .ts can be TypeScript and XML (later is "data")
+// .ts can be TypeScript and XML (XML is "data" type)
 const typesctipt = getLanguageByFileName('path/to/index.ts', 'programming');
 // Returns: [ 'TypeScript' ]
 
@@ -109,7 +108,7 @@ const programmingLangs = getLanguagesByType('programming');
 
 Returns an **array of strings** (names).
 
-- **fileName**: Can be a full path (`src/app/main.ts`), a relative path, or just a filename.
+- **fileName**: Can be a full path, a relative path, or just a filename.
 - **typeFilter**: (Optional) Filter by `'programming' | 'data' | 'markup' | 'prose'`.
 - **Returns**: Array of names or `null` if not found.
 
@@ -117,9 +116,15 @@ Returns an **array of strings** (names).
 
 Look up a full language object by name. Case-insensitive (`"python"`, `"Python"` work).
 
+- **name**: language name
+- **Returns**: language object
+
 ### `getLanguagesByType(type: LanguageType): Language[]`
 
 Get all full language objects belonging to a specific type.
+
+- **type**: `'programming' | 'data' | 'markup' | 'prose'`.
+- **Returns**: Array of language objects.
 
 ## Contributing
 
