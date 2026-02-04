@@ -55,7 +55,7 @@ const headers = getLanguageByFileName('header.h', 'programming');
 // Returns: [ 'C', 'C++', 'Objective-C' ]
 
 // .ts can be TypeScript and XML (XML is "data" type)
-const typesctipt = getLanguageByFileName('path/to/index.ts', 'programming');
+const typescript = getLanguageByFileName('path/to/index.ts', 'programming');
 // Returns: [ 'TypeScript' ]
 
 // .json is 'data', so filtering by 'programming' returns null
