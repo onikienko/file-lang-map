@@ -10,8 +10,11 @@ const filenamesData = _filenames as LookUpMap;
 const typesData = _types as TypeMap;
 
 /**
- * Browser-safe helper to get basename.
- * @param {string} fileName - "main.ts", "myApp/main.ts"
+ * Browser-safe helper to get basename from a file path.
+ * Handles both forward slashes (Unix/Web) and backslashes (Windows).
+ *
+ * @param {string} fileName - The file path or filename
+ * @returns {string} The basename (filename without directory path)
  */
 function getBasename(fileName: string): string {
   // Find the last separator (forward slash or backslash)
@@ -24,10 +27,12 @@ function getBasename(fileName: string): string {
 }
 
 /**
- * Browser-safe helper to get file extension.
- * Handles edge cases like "Makefile" (no ext) or ".gitignore" (is dotfile).
- * @param {string} fileName - "main.ts", "myApp/main.ts"
- * @param {string} [knownBaseName] - Optional, if the filename is known to start with a known base name.
+ * Browser-safe helper to extract file extension from a filename.
+ * Handles edge cases like files without extensions and dotfiles.
+ *
+ * @param {string} fileName - The file path or filename
+ * @param {string} [knownBaseName] - Optional pre-computed basename to avoid redundant calculation
+ * @returns {string} The file extension including the dot (e.g., '.ts') or empty string if none
  */
 function getExtension(fileName: string, knownBaseName?: string): string {
   const base = knownBaseName ?? getBasename(fileName);
@@ -40,9 +45,22 @@ function getExtension(fileName: string, knownBaseName?: string): string {
 
 // --- Public API ---
 /**
- * Get full language metadata by name (case-insensitive)
- * Returns a Language object or null if not found
- * @param {string} languageName - the name of the language (e.g. "JavaScript", "python")
+ * Get full language metadata by name (case-insensitive lookup).
+ *
+ * @param {string} languageName - The name of the language (e.g., "JavaScript", "python", "TypeScript")
+ * @returns {Language | null} The Language object with metadata, or null if not found
+ *
+ * @example
+ * const lang = getLanguage('javascript');
+ * // => { name: 'JavaScript', type: 'programming', extensions: ['.js', '.mjs', ...], filenames: [...] }
+ *
+ * @example
+ * const lang = getLanguage('PyThOn'); // Case-insensitive
+ * // => { name: 'Python', type: 'programming', extensions: ['.py', ...], filenames: [...] }
+ *
+ * @example
+ * const lang = getLanguage('UnknownLang');
+ * // => null
  */
 export function getLanguage(languageName: string): Language | null {
   const key = languageName.toLowerCase();
@@ -51,7 +69,27 @@ export function getLanguage(languageName: string): Language | null {
 
 /**
  * Get all languages belonging to a specific type category.
- * @param {LanguageType} type - 'programming' | 'data' | 'markup' | 'prose'
+ * Returns an array of full Language objects, not just names.
+ *
+ * @param {LanguageType} type - The category: 'programming' | 'data' | 'markup' | 'prose'
+ * @returns {Language[]} Array of Language objects matching the type, or empty array if none found
+ *
+ * @example
+ * const programmingLangs = getLanguagesByType('programming');
+ * // => [{ name: 'JavaScript', type: 'programming', ... }, { name: 'Python', ... }, ...]
+ *
+ * @example
+ * const dataLangs = getLanguagesByType('data');
+ * // => [{ name: 'JSON', type: 'data', ... }, { name: 'YAML', ... }, ...]
+ *
+ * @example
+ * const markupLangs = getLanguagesByType('markup');
+ * // => [{ name: 'HTML', type: 'markup', ... }, { name: 'XML', ... }, ...]
+ *
+ * @example
+ * // @ts-ignore - invalid type
+ * const invalid = getLanguagesByType('invalid');
+ * // => []
  */
 export function getLanguagesByType(type: LanguageType): Language[] {
   const keys = typesData[type];
@@ -67,10 +105,46 @@ export function getLanguagesByType(type: LanguageType): Language[] {
 }
 
 /**
- * Get potential language NAMES for a given file.
- * Returns an array of strings because of collisions (e.g. .rs -> ["Rust", "RenderScript"]).
- * @param {string} fileName - path or filename - "main.ts", "myApp/main.ts"
- * @param {LanguageType} [typeFilter]  - (Optional) 'programming' | 'data' | 'markup' | 'prose'
+ * Get potential language names for a given file path or filename.
+ * Returns an array of language names because some extensions map to multiple languages (e.g., .rs → Rust, RenderScript).
+ * Handles full paths, relative paths, exact filenames (like "Dockerfile"), and extensions.
+ *
+ * @param {string} fileName - File path, relative path, or filename (e.g., "main.ts", "/src/app/main.ts", "Dockerfile")
+ * @param {LanguageType} [typeFilter] - Optional filter by category: 'programming' | 'data' | 'markup' | 'prose'
+ * @returns {string[] | null} Array of language names (e.g., ['JavaScript']) or null if no match found
+ *
+ * @example
+ * getLanguageByFileName('main.js')
+ * // => ['JavaScript']
+ *
+ * @example
+ * getLanguageByFileName('.gitignore')
+ * // => ['Ignore List']
+ *
+ * @example
+ * // Ambiguous extension - returns multiple candidates
+ * getLanguageByFileName('shader.rs')
+ * // => ['RenderScript', 'Rust', 'XML']
+ *
+ * @example
+ * // Windows path with backslashes
+ * getLanguageByFileName('C:\\Users\\Dev\\project\\style.css')
+ * // => ['CSS']
+ *
+ * @example
+ * // Filter excludes non-matching types
+ * getLanguageByFileName('data.json', 'programming')
+ * // => null (JSON is 'data' type, not 'programming')
+ *
+ * @example
+ * // Unknown extension
+ * getLanguageByFileName('file.unknownext')
+ * // => null
+ *
+ * @example
+ * // File without extension (unless exact match)
+ * getLanguageByFileName('random_file_no_ext')
+ * // => null
  */
 export function getLanguageByFileName(fileName: string, typeFilter?: LanguageType): string[] | null {
   const base = getBasename(fileName);
