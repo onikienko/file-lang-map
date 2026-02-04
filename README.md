@@ -128,7 +128,7 @@ Get all full language objects belonging to a specific type.
 
 ## Contributing
 
-This package is **self-updating**. The data is fetched from GitHub Linguist automatically via the build script.
+This package is **self-updating**. The data is fetched from GitHub Linguist automatically.
 To refresh the data locally:
 
 ```bash

@@ -17,7 +17,7 @@ interface LinguistYaml {
 const URL = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml';
 const OUTPUT_DIR = path.resolve(__dirname, '../src/generated');
 
-async function build() {
+async function generateJSONs() {
   console.log('Downloading languages.yml...');
 
   const response = await fetch(URL);
@@ -95,4 +95,4 @@ async function build() {
   console.log('✅ Generation complete! Files saved to:', OUTPUT_DIR);
 }
 
-build().catch(console.error);
+generateJSONs().catch(console.error);
