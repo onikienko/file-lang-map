@@ -43,7 +43,8 @@
     "compile": "tsup src/index.ts --format cjs,esm --dts --target es2020 --clean",
     "build": "npm run generate && npm run compile",
     "clean": "tsx scripts/clean.ts",
-    "test": "node --import tsx --test test/**/*.test.ts"
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "changelog:latest": "conventional-changelog -p conventionalcommits -r 1"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
@@ -53,7 +54,8 @@
     "rollup": "^4.57.1",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "conventional-changelog-cli": "^4.1.0"
   },
   "engines": {
     "node": ">=18"
