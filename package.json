@@ -4,13 +4,14 @@
   "description": "Identify programming languages from filenames and extensions.",
   "keywords": [
     "linguist",
-    "language-detection",
+    "detect-language",
     "file-extension",
     "programming-languages",
     "extension-map",
     "filename-map",
-    "lookup",
-    "fast"
+    "filename",
+    "collision-aware",
+    "zero-dependency"
   ],
   "author": "Mykhailo Onikiienko <michael.onikienko@gmail.com>",
   "license": "MIT",
