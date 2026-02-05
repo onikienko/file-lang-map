@@ -69,39 +69,30 @@ export function getLanguage(languageName: string): Language | null {
 
 /**
  * Get all languages belonging to a specific type category.
- * Returns an array of full Language objects, not just names.
+ * Returns an array of language names (strings).
  *
  * @param {LanguageType} type - The category: 'programming' | 'data' | 'markup' | 'prose'
- * @returns {Language[]} Array of Language objects matching the type, or empty array if none found
+ * @returns {string[]} Array of language names matching the type, or empty array if none found
  *
  * @example
  * const programmingLangs = getLanguagesByType('programming');
- * // => [{ name: 'JavaScript', type: 'programming', ... }, { name: 'Python', ... }, ...]
+ * // => ['JavaScript', 'Python', 'TypeScript', 'Rust', ...]
  *
  * @example
  * const dataLangs = getLanguagesByType('data');
- * // => [{ name: 'JSON', type: 'data', ... }, { name: 'YAML', ... }, ...]
+ * // => ['JSON', 'YAML', 'CSV', ...]
  *
  * @example
  * const markupLangs = getLanguagesByType('markup');
- * // => [{ name: 'HTML', type: 'markup', ... }, { name: 'XML', ... }, ...]
+ * // => ['HTML', 'XML', 'Markdown', ...]
  *
  * @example
  * // @ts-ignore - invalid type
  * const invalid = getLanguagesByType('invalid');
  * // => []
  */
-export function getLanguagesByType(type: LanguageType): Language[] {
-  const keys = typesData[type];
-  if (!keys) return [];
-  const results: Language[] = [];
-  for (let i = 0; i < keys.length; i++) {
-    const lang = languagesData[keys[i]];
-    if (lang) {
-      results.push(lang);
-    }
-  }
-  return results;
+export function getLanguagesByType(type: LanguageType): string[] {
+  return typesData[type] || [];
 }
 
 /**

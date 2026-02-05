@@ -43,7 +43,7 @@ async function generateJSONs() {
   const filenameIndex: Record<string, string[]> = {};
 
   // Type Index (Refactored from "groups")
-  // Key: 'programming' -> Value: ['javascript', 'python', ...]
+  // Key: 'programming' -> Value: ['JavaScript', 'Python', ...]
   const typesDB: Record<string, string[]> = {
     data: [],
     programming: [],
@@ -80,7 +80,7 @@ async function generateJSONs() {
 
     // Build Type Index (e.g. "programming")
     if (def.type && typesDB[def.type]) {
-      typesDB[def.type].push(key);
+      typesDB[def.type].push(originalName);
     }
   }
 

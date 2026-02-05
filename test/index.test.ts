@@ -32,17 +32,18 @@ describe('file-lang-map Tests', () => {
   });
 
   describe('getLanguagesByType()', () => {
-    it('should return an array of objects for a known type', () => {
+    it('should return an array of language names for a known type', () => {
       const languages = getLanguagesByType('programming');
       assert.ok(Array.isArray(languages));
       assert.ok(languages.length > 0);
 
-      const js = languages.find((l) => l.name === 'JavaScript');
-      assert.ok(js);
-      assert.strictEqual(js.type, 'programming');
+      // Should return strings (language names)
+      assert.ok(languages.includes('JavaScript'));
+      assert.ok(languages.includes('Python'));
+      assert.ok(languages.includes('TypeScript'));
     });
 
-    it('should return an empty array for unknown type', () => {
+    it('should return an empty array for an unknown type', () => {
       // @ts-ignore - testing runtime safety for invalid input
       const languages = getLanguagesByType('aliens');
       assert.strictEqual(languages.length, 0);

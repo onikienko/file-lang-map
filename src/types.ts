@@ -56,7 +56,7 @@ export interface LookUpMap {
 /**
  * The shape of the generated 'types.json'.
  * Key: The type name (e.g. "programming", "data")
- * Value: Array of lowercase language keys
+ * Value: Array of language names (e.g. ["JavaScript", "Python"])
  */
 export interface TypeMap {
   [typeName: string]: string[];

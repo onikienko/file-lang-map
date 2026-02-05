@@ -94,13 +94,16 @@ const lang = getLanguage('javascript');
 
 ### 4. Get All Languages by Type
 
-Useful for filtering lists or building dropdowns.
+Useful for filtering lists or building dropdowns. Returns an array of language names (strings).
 
 ```typescript
 import {getLanguagesByType} from 'file-lang-map';
 
 const programmingLangs = getLanguagesByType('programming');
-// Returns: [ { name: "JavaScript", type: "programming", ... }, { name: "Python"... }, ... ]
+// Returns: ['JavaScript', 'Python', 'TypeScript', 'Rust', ...]
+
+const dataLangs = getLanguagesByType('data');
+// Returns: ['JSON', 'YAML', 'CSV', 'TOML', ...]
 ```
 
 ## API Reference
@@ -120,12 +123,12 @@ Look up a full language object by name. Case-insensitive (`"python"`, `"Python"`
 - **name**: language name
 - **Returns**: language object
 
-### `getLanguagesByType(type: LanguageType): Language[]`
+### `getLanguagesByType(type: LanguageType): string[]`
 
-Get all full language objects belonging to a specific type.
+Get all language names belonging to a specific type.
 
 - **type**: `'programming' | 'data' | 'markup' | 'prose'`.
-- **Returns**: Array of language objects.
+- **Returns**: Array of language names (strings).
 
 ## Contributing
 
