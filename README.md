@@ -2,7 +2,7 @@
 
 **Fast, zero-dependency way to identify programming languages from filenames and extensions.**
 
-### Why
+## Why
 
 Most language detection libraries are either too heavy or too slow (looping over arrays).
 `file-lang-map` pre-indexes GitHub
@@ -12,8 +12,9 @@ hash maps, ensuring instant lookups with a tiny footprint.
 ## Features
 
 - **O(1) Performance:** Lookups are instant, regardless of how many languages exist.
-- **Browser Ready:** Zero dependencies (no `fs`, no `path`). Works in Vite, Next.js, React, Vue.
-- **Collision Aware:** Correctly handles ambiguous extensions (e.g., `.rs` returns both "Rust" and "RenderScript").
+- **Browser Ready:** Zero dependencies (no `fs`, no `path`). Works in browser and Node.js.
+- **TypeScript Support:** Includes built-in type definitions.
+- **Collision Aware:** Correctly handles ambiguous extensions (e.g., `.h` returns "C", "C++" and "Objective-C").
 - **Auto-Updated:** Data is fetched directly from GitHub Linguist sources.
 - **Tiny:** Tree-shakable. Only load what you use.
 
@@ -137,10 +138,9 @@ npm run generate
 
 ## How Self-Updating Works
 
-The project uses a `linguist-lock.json` file to track the state of the upstream `languist.yml` (sha256 hash of
-linguisl.yml).
+The project creates and uses a `linguist-lock.json` file to track the state of the upstream `linguist.yml`.
 
-- When you or CI/CD run `npm run generate`, it downloads the latest data and calculates a hash.
+- When the CI/CD run `npm run generate`, it downloads the latest data and calculates a hash.
 - If the hash differs from `linguist-lock.json`, the lock file is updated.
 - The CI/CD pipeline (`.github/workflows/update-and-publish.yml)` checks for changes in `linguist-lock.json` to decide
   whether to release a new version.
