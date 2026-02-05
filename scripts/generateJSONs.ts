@@ -1,6 +1,7 @@
 import yaml from 'js-yaml';
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 
 // --- Interfaces for the incoming YAML ---
 interface LinguistDef {
@@ -16,6 +17,7 @@ interface LinguistYaml {
 
 const URL = 'https://raw.githubusercontent.com/github/linguist/master/lib/linguist/languages.yml';
 const OUTPUT_DIR = path.resolve(__dirname, '../src/generated');
+const LOCK_FILE = path.resolve(__dirname, '../linguist-lock.json');
 
 async function generateJSONs() {
   console.log('Downloading languages.yml...');
@@ -23,6 +25,9 @@ async function generateJSONs() {
   const response = await fetch(URL);
   if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
   const yamlText = await response.text();
+
+  // Calculate Hash
+  const hash = crypto.createHash('sha256').update(yamlText).digest('hex');
 
   const rawLanguages = yaml.load(yamlText) as LinguistYaml;
 
@@ -93,6 +98,24 @@ async function generateJSONs() {
   writeJson('types.json', typesDB);
 
   console.log('✅ Generation complete! Files saved to:', OUTPUT_DIR);
+
+  // Update Lockfile if changed
+  let currentHash = '';
+  if (fs.existsSync(LOCK_FILE)) {
+    try {
+      const lockData = JSON.parse(fs.readFileSync(LOCK_FILE, 'utf-8'));
+      currentHash = lockData.hash;
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  if (currentHash !== hash) {
+    fs.writeFileSync(LOCK_FILE, JSON.stringify({ hash }, null, 2));
+    console.log('🔒 Lock file updated:', LOCK_FILE);
+  } else {
+    console.log('🔒 Lock file is up to date.');
+  }
 }
 
 generateJSONs().catch(console.error);

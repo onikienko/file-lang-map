@@ -135,6 +135,16 @@ To refresh the data locally:
 npm run generate
 ```
 
+## How Self-Updating Works
+
+The project uses a `linguist-lock.json` file to track the state of the upstream `languages.yml` (sha256 hash of
+linguisl.yml).
+
+- When you or CI/CD run `npm run generate`, it downloads the latest data and calculates a hash.
+- If the hash differs from `linguist-lock.json`, the lock file is updated.
+- The CI/CD pipeline (`.github/workflows/update-and-publish.yml)` checks for changes in `linguist-lock.json` to decide
+  whether to release a new version.
+
 ## License
 
 MIT

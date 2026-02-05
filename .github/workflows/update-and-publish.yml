@@ -31,11 +31,11 @@ jobs:
       - name: Generate
         run: npm run generate
 
-      # 2. Check if the 'src/generated' folder changed
+      # 2. Check if the 'linguist-lock.json' file changed
       - name: Check for changes
         id: check_changes
         run: |
-          if [[ -n $(git status --porcelain src/generated) ]]; then
+          if [[ -n $(git status --porcelain linguist-lock.json) ]]; then
             echo "changes_detected=true" >> $GITHUB_OUTPUT
             echo "::notice ::Changes detected in language data. Preparing to publish."
           else
@@ -63,7 +63,7 @@ jobs:
           # Bump a version in package.json without creating a git commit
           npm version patch --no-git-tag-version
 
-          git add src/generated package.json package-lock.json
+          git add linguist-lock.json package.json package-lock.json
 
           NEW_VERSION=$(node -p "require('./package.json').version")
 
