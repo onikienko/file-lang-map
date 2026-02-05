@@ -11,28 +11,28 @@ export interface Language {
    * The pretty display name of the language (e.g., "C++", "JavaScript", "JSON").
    * Use this for UI labels.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The category of the language.
    */
-  type: LanguageType;
+  readonly type: LanguageType;
 
   /**
    * List of file extensions associated with this language (e.g., [".js", ".mjs"]).
    */
-  extensions: string[];
+  readonly extensions: string[];
 
   /**
    * List of specific filenames associated with this language (e.g., ["Jenkinsfile"]).
    */
-  filenames: string[];
+  readonly filenames: string[];
 
   /**
    * The parent group name, if applicable (e.g., "Shell" for "Alpine Abuild", "TypeScript" for "TSX").
    * Note: This refers to Linguist's inheritance grouping, not the 'type'.
    */
-  group?: string;
+  readonly group?: string;
 }
 
 /**
@@ -41,7 +41,7 @@ export interface Language {
  * Value: The Language object
  */
 export interface LanguagesMap {
-  [languageKey: string]: Language;
+  readonly [languageKey: string]: Language;
 }
 
 /**
@@ -50,7 +50,7 @@ export interface LanguagesMap {
  * Value: Array of lowercase language keys (e.g. ["rust", "renderscript"])
  */
 export interface LookUpMap {
-  [key: string]: string[];
+  readonly [key: string]: string[];
 }
 
 /**

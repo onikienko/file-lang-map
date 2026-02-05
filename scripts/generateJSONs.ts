@@ -1,11 +1,12 @@
 import yaml from 'js-yaml';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
+import { LanguageType } from '../src/types';
 
 // --- Interfaces for the incoming YAML ---
 interface LinguistDef {
-  type: string;
+  type: LanguageType;
   extensions?: string[];
   filenames?: string[];
   group?: string;
@@ -25,9 +26,6 @@ async function generateJSONs() {
   const response = await fetch(URL);
   if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
   const yamlText = await response.text();
-
-  // Calculate Hash
-  const hash = crypto.createHash('sha256').update(yamlText).digest('hex');
 
   const rawLanguages = yaml.load(yamlText) as LinguistYaml;
 
@@ -54,13 +52,16 @@ async function generateJSONs() {
   for (const [originalName, def] of Object.entries(rawLanguages)) {
     const key = originalName.toLowerCase();
 
-    languagesDB[key] = {
-      name: originalName,
-      type: def.type,
-      extensions: def.extensions || [],
-      filenames: def.filenames || [],
-      ...(def.group && { group: def.group }),
-    };
+    // Build Type Index (e.g. "programming")
+    if (def.type) {
+      if (typesDB[def.type]) {
+        typesDB[def.type].push(originalName);
+      } else {
+        throw new Error(
+          `Unknown type '${def.type}' found for language '${originalName}'. Update src/types.ts and scripts/generateJSONs.ts to include this new type.`,
+        );
+      }
+    }
 
     // Build Extension Index
     if (def.extensions) {
@@ -78,10 +79,13 @@ async function generateJSONs() {
       }
     }
 
-    // Build Type Index (e.g. "programming")
-    if (def.type && typesDB[def.type]) {
-      typesDB[def.type].push(originalName);
-    }
+    languagesDB[key] = {
+      name: originalName,
+      type: def.type,
+      extensions: def.extensions || [],
+      filenames: def.filenames || [],
+      ...(def.group && { group: def.group }),
+    };
   }
 
   // Ensure output directory exists
@@ -110,6 +114,7 @@ async function generateJSONs() {
     }
   }
 
+  const hash = crypto.createHash('sha256').update(yamlText).digest('hex');
   if (currentHash !== hash) {
     fs.writeFileSync(LOCK_FILE, JSON.stringify({ hash }, null, 2));
     console.log('🔒 Lock file updated:', LOCK_FILE);
