@@ -130,7 +130,7 @@ Get all language names belonging to a specific type.
 - **type**: `'programming' | 'data' | 'markup' | 'prose'`.
 - **Returns**: Array of language names (strings).
 
-## Contributing
+## Contributing and Development
 
 This package is **self-updating**. The data is fetched from GitHub Linguist automatically.
 To refresh the data locally:
@@ -139,7 +139,17 @@ To refresh the data locally:
 npm run generate
 ```
 
-## How Self-Updating Works
+### Running Tests
+
+The project has two test commands:
+
+- **`npm test`**: Uses native Node.js glob patterns (`test/**/*.test.ts`). Requires Node.js 20.11+ or 22+.
+- **`npm run test:ci`**: Uses shell `find` command for file discovery. Compatible with Node.js 18+.
+
+The CI pipeline tests on Node 18 and 24, so `test:ci` ensures compatibility with older Node versions that don't support
+glob patterns in the `--test` flag.
+
+### How Self-Updating Works
 
 The project creates and uses a `linguist-lock.json` file to track the state of the upstream `linguist.yml`.
 
