@@ -43,7 +43,7 @@
     "compile": "tsup src/index.ts --format cjs,esm --dts --target es2020 --clean",
     "build": "npm run generate && npm run compile",
     "clean": "tsx scripts/clean.ts",
-    "test": "node --import tsx --test test/**/*.test.ts",
+    "test": "node --import tsx --test $(find test -name '*.test.ts')",
     "changelog:latest": "conventional-changelog -p conventionalcommits -r 1"
   },
   "devDependencies": {
