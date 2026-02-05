@@ -55,6 +55,7 @@ jobs:
 
       # 5. Bump Version, Commit & Publish
       - name: Bump Version & Publish
+        id: publish
         if: steps.check_changes.outputs.changes_detected == 'true'
         run: |
           git config --global user.name 'github-actions[bot]'
@@ -74,3 +75,15 @@ jobs:
           git push origin "v$NEW_VERSION"
 
           npm publish --provenance --access public
+
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      # 7. Create GitHub Release
+      - name: Create Release
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "v${{ steps.publish.outputs.new_version }}"
+          name: "v${{ steps.publish.outputs.new_version }}"
+          body: "Updated language data to match the latest [linguist/languages.yml](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml)."
+          allowUpdates: true
