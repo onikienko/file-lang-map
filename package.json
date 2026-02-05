@@ -55,7 +55,7 @@
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "conventional-changelog-cli": "^4.1.0"
+    "conventional-changelog-cli": "^5.0.0"
   },
   "engines": {
     "node": ">=18"
