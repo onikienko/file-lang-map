@@ -137,7 +137,7 @@ npm run generate
 
 ## How Self-Updating Works
 
-The project uses a `linguist-lock.json` file to track the state of the upstream `languages.yml` (sha256 hash of
+The project uses a `linguist-lock.json` file to track the state of the upstream `languist.yml` (sha256 hash of
 linguisl.yml).
 
 - When you or CI/CD run `npm run generate`, it downloads the latest data and calculates a hash.
