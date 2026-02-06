@@ -1,6 +1,6 @@
 # file-lang-map
 
-**Fast, zero-dependency way to identify programming languages from filenames and extensions.**
+**Fast, zero-dependency way to identify programming languages from paths, filenames, and extensions.**
 
 ## Why
 
@@ -14,9 +14,10 @@ hash maps, ensuring instant lookups with a tiny footprint.
 - **O(1) Performance:** Lookups are instant, regardless of how many languages exist.
 - **Browser Ready:** Zero dependencies (no `fs`, no `path`). Works in browser and Node.js.
 - **TypeScript Support:** Includes built-in type definitions.
+- **Flexible:** Works with full and relative paths, filenames, or just extensions for all platforms.
+- **Tiny:** Tree-shakable. Only load what you use.
 - **Collision Aware:** Correctly handles ambiguous extensions (e.g., `.h` returns "C", "C++" and "Objective-C").
 - **Auto-Updated:** Data is fetched directly from GitHub Linguist sources.
-- **Tiny:** Tree-shakable. Only load what you use.
 
 ## Installation
 
@@ -67,10 +68,13 @@ const json = getLanguageByFileName('data.json', 'programming');
 ### 3. Get Language Metadata
 
 Lookup full language details by name (case-insensitive).
+Language object includes all possible extensions for the language, name, possible filenames, and type.
 
 ```typescript
 import {getLanguage} from 'file-lang-map';
 
+// Case-insensitive lookup. 
+// Returns language object which includes all possible extensions for the language, name...
 const lang = getLanguage('javascript');
 /*
 {

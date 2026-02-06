@@ -1,7 +1,7 @@
 {
   "name": "file-lang-map",
   "version": "1.1.0",
-  "description": "Identify programming languages from filenames and extensions.",
+  "description": "Identify programming languages from paths, filenames and extensions.",
   "keywords": [
     "linguist",
     "detect-language",
