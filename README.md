@@ -4,20 +4,19 @@
 
 ## Why
 
-Most language detection libraries are either too heavy or too slow (looping over arrays).
-`file-lang-map` pre-indexes GitHub
-Linguist [languages.yml](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml) data into optimized
-hash maps, ensuring instant lookups with a tiny footprint.
+Some language detectors can be heavy or rely on linear scans. `file-lang-map` pre-indexes GitHub
+Linguist [languages.yml](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml) into compact lookup
+maps, giving near-instant lookups, a small bundle size, and zero runtime dependencies.
 
 ## Features
 
-- **O(1) Performance:** Lookups are instant, regardless of how many languages exist.
-- **Browser Ready:** Zero dependencies (no `fs`, no `path`). Works in browser and Node.js.
+- **O(1) (average-case) Performance:** Lookups are instant, regardless of how many languages exist.
+- **Browser Ready:** Zero runtime dependencies. Works in browser and Node.js.
 - **TypeScript Support:** Includes built-in type definitions.
 - **Flexible:** Works with full and relative paths, filenames, or just extensions for all platforms.
-- **Tiny:** Tree-shakable. Only load what you use.
+- **Tiny:** Tree-shakable. Only load what you use. (Use named imports and a bundler that supports tree-shaking)
 - **Collision Aware:** Correctly handles ambiguous extensions (e.g., `.h` returns "C", "C++" and "Objective-C").
-- **Auto-Updated:** Data is fetched directly from GitHub Linguist sources.
+- **Auto-Updated:** Data is fetched directly from GitHub Linguist sources using GitHub actions weekly.
 
 ## Installation
 
@@ -25,11 +24,45 @@ hash maps, ensuring instant lookups with a tiny footprint.
 npm install file-lang-map
 ```
 
-## Usage
+## Quick Start
+
+```typescript
+import {getLanguageByFileName, getLanguage, getLanguagesByType} from 'file-lang-map';
+
+// Get all possible languages from filename (may return null if unknown)
+const languages = getLanguageByFileName('path/to/file.js');
+if (languages === null) {
+  console.log('not found')
+} else {
+  console.log(languages)
+  // ['JavaScript']
+}
+
+// Get language metadata by name. Case-insensitive lookup ("javascript" or "JavaScript").
+const language = getLanguage('JavaScript');
+/*
+{
+  name: 'JavaScript',
+  type: 'programming',
+  extensions: ['.js', '.cjs', '.mjs', ... ], // list of all know extensions
+  filenames: ['Jakefile'] // list of all known filenames
+}
+*/
+
+// You can optionally filter results by type (e.g., only 'programming')
+const prog = getLanguageByFileName('data.json', 'programming');
+// prog === null because JSON is a 'data' type
+
+// Get list of all known "programming" languages (also available - 'data', 'markup', 'prose')
+const programmingLanguages = getLanguagesByType('programming');
+// ['JavaScript', 'Python', 'TypeScript', 'Rust', ...]
+```
+
+## Examples
 
 ### 1. Identify Language by Filename
 
-Handles full paths, exact filenames, and extensions. Returns an array of language names.
+Handles full paths (absolute or relative), exact filenames, and extensions. Returns an array of language names.
 
 ```typescript
 import {getLanguageByFileName} from 'file-lang-map';
