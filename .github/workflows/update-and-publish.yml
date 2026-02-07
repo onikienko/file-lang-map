@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0 # Required for version bumping
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
@@ -43,42 +43,46 @@ jobs:
             echo "::notice ::No changes detected. Skipping publish."
           fi 
 
-      # 3. Run tests against the NEW data
+      # 3. Run tests against the new data
       - name: Test
         if: steps.check_changes.outputs.changes_detected == 'true'
         run: npm test
 
-      # 4. Compile typescript
+      # 4. Compile using newly generated language JSONs
       - name: Compile
         if: steps.check_changes.outputs.changes_detected == 'true'
         run: npm run compile
 
-      # 5. Bump Version, Commit & Publish
-      - name: Bump Version & Publish
-        id: publish
+      # 5. Configure git for commits
+      - name: Configure Git
         if: steps.check_changes.outputs.changes_detected == 'true'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-          # Bump a version in package.json without creating a git commit
-          npm version patch --no-git-tag-version
+      # 6. Commit language data updates
+      - name: Commit Language Data
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          git add linguist-lock.json
+          git commit -m "chore: update language data [skip ci]"
 
-          git add linguist-lock.json package.json package-lock.json
+      # 7. Bump Version, Tag & Publish
+      - name: Bump Version & Publish
+        id: publish
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          npm version patch -m "v%s [skip ci]"
 
           NEW_VERSION=$(node -p "require('./package.json').version")
 
-          git commit -m "chore: update language data to v$NEW_VERSION [skip ci]"
-          git tag "v$NEW_VERSION"
-
-          git push
-          git push origin "v$NEW_VERSION"
+          git push --follow-tags
 
           npm publish --provenance --access public
 
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
-      # 7. Create GitHub Release
+      # 8. Create GitHub Release
       - name: Create Release
         if: steps.check_changes.outputs.changes_detected == 'true'
         uses: ncipollo/release-action@v1
