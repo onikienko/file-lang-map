@@ -4,16 +4,16 @@
 
 ## Why
 
-Some language detectors can be heavy or rely on linear scans. `file-lang-map` pre-indexes GitHub
-Linguist [languages.yml](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml) into compact lookup
-maps, giving near-instant lookups, a small bundle size, and zero runtime dependencies.
+Most TS/JS programming language detectors are heavy or rely on linear scans. 
+`file-lang-map` pre-indexes GitHub Linguist [languages.yml](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml) into compact lookup maps, giving near-instant lookups, a small bundle size, and zero runtime dependencies.
+I built this package for [Zmina](https://zmina.app) project needs. Later, Zmina moved to Rust, and I open-sourced this TS package.
 
 ## Features
 
 - **O(1) (average-case) Performance:** Lookups are instant, regardless of how many languages exist.
-- **Browser Ready:** Zero runtime dependencies. Works in browser and Node.js.
+- Zero runtime dependencies. Works in browser and Node.js.
 - **TypeScript Support:** Includes built-in type definitions.
-- **Flexible:** Works with full and relative paths, filenames, or just extensions for all platforms.
+- Works with full and relative paths, filenames, or just extensions for all platforms.
 - **Tiny:** Tree-shakable. Only load what you use. (Use named imports and a bundler that supports tree-shaking)
 - **Collision Aware:** Correctly handles ambiguous extensions (e.g., `.h` returns "C", "C++" and "Objective-C").
 - **Auto-Updated:** Data is fetched directly from GitHub Linguist sources using GitHub actions weekly.
@@ -101,13 +101,13 @@ const json = getLanguageByFileName('data.json', 'programming');
 ### 3. Get Language Metadata
 
 Lookup full language details by name (case-insensitive).
-Language object includes all possible extensions for the language, name, possible filenames, and type.
+The language object includes all possible extensions for the language, name, possible filenames, and type.
 
 ```typescript
 import {getLanguage} from 'file-lang-map';
 
 // Case-insensitive lookup. 
-// Returns language object which includes all possible extensions for the language, name...
+// Returns a language object which includes all possible extensions for the language, name...
 const lang = getLanguage('javascript');
 /*
 {
